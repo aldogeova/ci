@@ -42,5 +42,26 @@ pipeline {
                         '''
                   }
             }
+            stage('Build') {
+                  steps {
+                        echo 'Building eBuy system'
+
+                        sh '''
+                    cd $EBUY_HOME
+                    ./gradlew :alert-service:bootJar --parallel
+                    ./gradlew :api-gateway:bootJar --parallel
+                    ./gradlew :client-service:bootJar --parallel
+                    ./gradlew :config-service:bootJar --parallel
+                    ./gradlew :masterdata-service:bootJar --parallel
+                    ./gradlew :registry-service:bootJar --parallel
+                    ./gradlew :uaa-service:bootJar --parallel
+                    ./gradlew :product-service:bootJar --parallel
+                    ./gradlew :supplier-service:bootJar --parallel
+                    ./gradlew :srm-service:bootJar --parallel
+                    ./gradlew :supplier-portal-service:bootJar --parallel
+                    ./gradlew :sourcing-service:bootJar --parallel
+                '''
+                  }
+            }
       }
 }
