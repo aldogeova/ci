@@ -63,5 +63,47 @@ pipeline {
                 '''
                   }
             }
+            stage('Build Docker Images') {
+                  steps {
+                        echo 'Creating Docker Images'
+                        sh '''
+                    cd $EBUY_HOME
+                    sudo docker-compose build --force-rm --no-cache --parallel
+                '''
+                  }
+            }
+            stage('Stop Project') {
+                  steps {
+                        echo 'Stopping current eBuy system execution'
+                        sh '''
+                    cd $EBUY_HOME
+                    sudo docker-compose stop
+
+                    sudo docker network prune --force
+
+                    sudo docker-compose rm -f ebuy-nginx
+                    sudo docker-compose rm -f angular-client
+                    sudo docker-compose -f docker-compose-cleanup.yml down -v
+                '''
+                  }
+            }
+            stage('Build Docker Images') {
+                  steps {
+                        echo 'Creating Docker Images'
+                        sh '''
+                    cd $EBUY_HOME
+                    sudo docker-compose build --force-rm --no-cache --parallel
+                '''
+                  }
+            }
+            stage('Deploy Project') {
+                  steps {
+                        echo 'Starting eBuy system'
+                        sh '''
+                    cd $EBUY_HOME
+                    sudo docker-compose up -d --force-recreate
+                '''
+                  }
+            }
       }
 }
