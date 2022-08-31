@@ -1,6 +1,14 @@
 pipeline {
       agent any
 
+      options {
+            timestamps()
+      }
+
+      environment {
+            EBUY_HOME = '/srv/dockers/ebuy-project'
+      }
+
       stages {
             stage('Prepare Workspace') {
                   steps {
@@ -9,6 +17,28 @@ pipeline {
                               currentBuild.displayName = "$env.BUILD_ID - $BRANCH_NAME"
                               env.BRANCH_NAME = "${BRANCH_NAME}"
                         }
+                  }
+            }
+            stage('Construct Environment') {
+                  steps {
+                        echo 'Constructing...'
+                        echo 'Deleting old code eBuy system...'
+                        sh '''rm $EBUY_HOME -fR'''
+
+                        echo 'Updating eBuy system...'
+
+                        sh '''
+                              cd $WORKSPACE
+                              git clone git@bitbucket.org:bpebuy/ebuy-project.git
+                        '''
+                        sh '''
+                              cd $EBUY_HOME
+                              git fetch
+                              git checkout $BRANCH_NAME
+                              git pull
+                              git submodule init
+                              git submodule update --jobs=6
+                        '''
                   }
             }
       }
