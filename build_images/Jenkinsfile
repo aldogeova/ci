@@ -1,0 +1,15 @@
+pipeline {
+      agent {
+            label
+      }
+
+      stages {
+            stage('Prepare Workspace') {
+                  script {
+                        echo 'Set build name...'
+                        currentBuild.displayName = "$env.BUILD_ID - $BRANCH_NAME"
+                        env.BRANCH_NAME = "${BRANCH_NAME}"
+                  }
+            }
+      }
+}
