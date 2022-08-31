@@ -63,15 +63,6 @@ pipeline {
                 '''
                   }
             }
-            stage('Build Docker Images') {
-                  steps {
-                        echo 'Creating Docker Images'
-                        sh '''
-                    cd $EBUY_HOME
-                    sudo docker-compose build --force-rm --no-cache --parallel
-                '''
-                  }
-            }
             stage('Stop Project') {
                   steps {
                         echo 'Stopping current eBuy system execution'
