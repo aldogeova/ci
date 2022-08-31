@@ -68,6 +68,9 @@ pipeline {
                         echo 'Stopping current eBuy system execution'
                         sh '''
                     cd $EBUY_HOME
+
+                    sudo su root
+
                     sudo docker-compose stop
 
                     sudo docker network prune --force
