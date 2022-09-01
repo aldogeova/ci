@@ -69,15 +69,13 @@ pipeline {
                         sh '''
                     cd $EBUY_HOME
 
-                    sudo su root
+                    docker-compose stop
 
-                    sudo docker-compose stop
+                    docker network prune --force
 
-                    sudo docker network prune --force
-
-                    sudo docker-compose rm -f ebuy-nginx
-                    sudo docker-compose rm -f angular-client
-                    sudo docker-compose -f docker-compose-cleanup.yml down -v
+                    docker-compose rm -f ebuy-nginx
+                    docker-compose rm -f angular-client
+                    docker-compose -f docker-compose-cleanup.yml down -v
                 '''
                   }
             }
