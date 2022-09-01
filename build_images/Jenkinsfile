@@ -84,7 +84,7 @@ pipeline {
                         echo 'Creating Docker Images'
                         sh '''
                     cd $EBUY_HOME
-                    sudo docker-compose build --force-rm --no-cache --parallel
+                    docker-compose build --force-rm --no-cache --parallel
                 '''
                   }
             }
@@ -93,7 +93,7 @@ pipeline {
                         echo 'Starting eBuy system'
                         sh '''
                     cd $EBUY_HOME
-                    sudo docker-compose up -d --force-recreate
+                    docker-compose up -d --force-recreate
                 '''
                   }
             }
