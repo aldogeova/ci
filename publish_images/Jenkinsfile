@@ -79,7 +79,7 @@ pipeline {
                                                 echo 'Publishing image to repository'
                                                 echo("$TAG_NAME_VERSION")
 
-                                                docker.withRegistry('https://us.gcr.io', 'gcr:[pets]') {
+                                                docker.withRegistry("https://us.gcr.io", "pets") {
                                                       dockerImage.push()
                                                       dockerImage.push("$TAG_NAME_VERSION")
                                                 }
