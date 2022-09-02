@@ -81,6 +81,7 @@ pipeline {
                                                 echo 'SERVICE HOME $SERVICE_HOME'
                                                 echo '$SERVICE_HOME'
                                                 echo 'SERVICE_HOME'
+                                                echo '$EBUY_HOME/$service'
 
                                                 def dockerImage = docker.build(imageName, SERVICE_HOME)
 
