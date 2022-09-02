@@ -15,8 +15,8 @@ pipeline {
             TAG_NAME_VERSION = "$TAG_NAME-$BUILD_VERSION"
 
             //GCP Variables
-            GC_REGISTRY = 'gcr.io'
-            GC_PROJECT_ID = 'pets'
+            GC_REGISTRY = 'us.gcr.io'
+            GC_PROJECT_ID = 'pets-359514'
       }
 
       stages {
@@ -79,7 +79,7 @@ pipeline {
                                                 echo 'Publishing image to repository'
                                                 echo("$TAG_NAME_VERSION")
 
-                                                docker.withRegistry('https://gcr.io', 'gcr:[pets]') {
+                                                docker.withRegistry('https://us.gcr.io', 'gcr:[pets]') {
                                                       dockerImage.push()
                                                       dockerImage.push("$TAG_NAME_VERSION")
                                                 }
