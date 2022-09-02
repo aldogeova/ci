@@ -65,9 +65,9 @@ pipeline {
                                                       echo "Building $CURRENT_SERVICE_NAME"
                                                       sh(script: "./gradlew :$CURRENT_SERVICE_NAME:bootJar --no-daemon")
                                                 }
-                                          else {
+                                                else {
                                                       echo "$CURRENT_SERVICE_NAME is not a Java service. Skiping jar generation."
-                                          }
+                                                }
 
                                                 echo "Creating Docker Image for $CURRENT_SERVICE_NAME"
                                                 echo "GC_REGISTRY $GC_REGISTRY"
@@ -77,6 +77,8 @@ pipeline {
 
                                                 def imageName = "$GC_REGISTRY/$GC_PROJECT_ID/$CURRENT_SERVICE_NAME:$TAG_NAME"
                                                 echo 'Push Docker Image  imageName on GCP Plattform'
+
+                                                echo 'SERVICE HOME $SERVICE_HOME'
 
                                                 def dockerImage = docker.build(imageName, SERVICE_HOME)
 
