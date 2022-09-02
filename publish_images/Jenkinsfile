@@ -59,8 +59,8 @@ pipeline {
                                           }
                                           else {
                                                 def CURRENT_SERVICE_NAME = service
-                                                def SERVICE_HOME = '$EBUY_HOME/$service'
-                                                def isService = fileExists "$SERVICE_HOME/build.gradle"
+                                                def SERVICE_HOME = "${EBUY_HOME}/${service}"
+                                                def isService = fileExists "${SERVICE_HOME}/build.gradle"
                                                 if (isService) {
                                                       echo "Building $CURRENT_SERVICE_NAME"
                                                       sh(script: "./gradlew :$CURRENT_SERVICE_NAME:bootJar --no-daemon")
@@ -74,7 +74,7 @@ pipeline {
                                                 echo "${SERVICE_HOME}"
 
                                                 def imageName = "$GC_REGISTRY/$GC_PROJECT_ID/$CURRENT_SERVICE_NAME:$TAG_NAME"
-                                                def dockerImage = docker.build(imageName, '$EBUY_HOME/$CURRENT_SERVICE_NAME')
+                                                def dockerImage = docker.build(imageName, SERVICE_HOME)
 
                                                 echo 'Publishing image to repository'
                                                 echo("$TAG_NAME_VERSION")
