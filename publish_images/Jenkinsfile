@@ -79,6 +79,8 @@ pipeline {
                                                 echo 'Push Docker Image  imageName on GCP Plattform'
 
                                                 echo 'SERVICE HOME $SERVICE_HOME'
+                                                echo '$SERVICE_HOME'
+                                                echo 'SERVICE_HOME'
 
                                                 def dockerImage = docker.build(imageName, SERVICE_HOME)
 
