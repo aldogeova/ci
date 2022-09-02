@@ -1,0 +1,98 @@
+pipeline {
+      agent any
+      options {
+            timestamps()
+      }
+
+      environment {
+            EBUY_WORKSPACE = '/srv/dockers/'
+            EBUY_HOME = "$EBUY_WORKSPACE/ebuy-project"
+            SPRING_BOOT_STARTER_NAME = 'ebuy-spring-boot-starter'
+            SELENIUM_TESTS = 'ebuy-selenium-test'
+
+            DOCKER_REPOSITORY = '913527608034.dkr.ecr.eu-west-1.amazonaws.com'
+            TAG_NAME = BRANCH_NAME.replaceAll('/', '-')
+            BUILD_VERSION = sh(script: 'echo `date +%Y%m%d%H%M`', returnStdout: true).trim()
+            TAG_NAME_VERSION = "$TAG_NAME-$BUILD_VERSION"
+
+            //GCP Variables
+            GC_REGISTRY = 'gcr.io'
+            GC_PROJECT_ID = 'pets'
+      }
+
+      stages {
+            stage('Construct Environment') {
+                  steps {
+                        script {
+                              sleep 60
+                              echo 'Constructing...'
+                              echo 'Deleting old code eBuy system...'
+                              sh '''rm $EBUY_HOME -fR'''
+
+                              echo 'Updating eBuy system...'
+
+                              sh '''
+                        cd $EBUY_WORKSPACE
+                        git clone git@bitbucket.org:bpebuy/ebuy-project.git
+                    '''
+                              // get the latest version of the branch to test
+                              dir(EBUY_HOME) {
+                                    sh '''
+                                          git fetch
+                                          git checkout $BRANCH_NAME
+                                          git pull
+                                          git submodule init
+                                          git submodule update --jobs=6
+                                    '''
+                              }
+                        }
+                  }
+            }
+            stage('Build Service & Publish Docker Images') {
+                  steps {
+                        script {
+                              dir(EBUY_HOME) {
+                                    def  MODIFIED_SERVICES = sh(script: "ls -d  */ | grep 'service\\|ebuy\\|gateway' | sed 's/\\/\$//'", returnStdout: true).trim()
+                                    echo "Starting the building process of: $MODIFIED_SERVICES"
+                                    for (String service : MODIFIED_SERVICES.split("\\r?\\n")) {
+                                          if (service == SPRING_BOOT_STARTER_NAME || service == SELENIUM_TESTS) {
+                                                echo "$SPRING_BOOT_STARTER_NAME o $SELENIUM_TESTS detected. Skiping build & image generation."
+                                          }
+                                          else {
+                                                def CURRENT_SERVICE_NAME = service
+                                                def SERVICE_HOME = '$EBUY_HOME/$service'
+                                                def isService = fileExists "$SERVICE_HOME/build.gradle"
+                                                if (isService) {
+                                                      echo "Building $CURRENT_SERVICE_NAME"
+                                                      sh(script: "./gradlew :$CURRENT_SERVICE_NAME:bootJar --no-daemon")
+                                                }
+                                          else {
+                                                      echo "$CURRENT_SERVICE_NAME is not a Java service. Skiping jar generation."
+                                          }
+
+                                                echo "Creating Docker Image for $CURRENT_SERVICE_NAME"
+                                                // def imageName = "913527608034.dkr.ecr.eu-west-1.amazonaws.com/$CURRENT_SERVICE_NAME:$TAG_NAME"
+                                                // def dockerImage = docker.build(imageName, SERVICE_HOME)
+                                                // echo 'Publishing image to repository'
+                                                // echo("$TAG_NAME_VERSION")
+                                                // docker.withRegistry('https://913527608034.dkr.ecr.eu-west-1.amazonaws.com', 'ecr:eu-west-1:ebuy-docker-repository') {
+                                                //       dockerImage.push()
+                                                //       dockerImage.push("$TAG_NAME_VERSION")
+                                                // }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            }
+      }
+      post {
+            always {
+                  script {
+                        sh '''
+                    docker system prune -a --force
+                '''
+                  }
+            }
+      }
+}
