@@ -75,13 +75,17 @@ pipeline {
                                                 echo "CURRENT_SERVICE_NAME $CURRENT_SERVICE_NAME"
                                                 echo "TAG_NAME_VERSION $TAG_NAME_VERSION"
 
-                                                def imageName = '$GC_REGISTRY/$GC_PROJECT_ID/$CURRENT_SERVICE_NAME:$TAG_NAME_VERSION'
-                                                echo "Push Docker Image  $imageName on GCP Plattform"
+                                                def imageName = "$GC_REGISTRY/$GC_PROJECT_ID/$CURRENT_SERVICE_NAME:$TAG_NAME"
+                                                echo 'Push Docker Image  imageName on GCP Plattform'
 
-                                                def app = docker.build("$imageName")
+                                                def dockerImage = docker.build(imageName, SERVICE_HOME)
 
-                                                docker.withRegistry('https://eu.gcr.io', 'gcr:[pets]') {
-                                                      app.push("${TAG_NAME_VERSION}")
+                                                echo 'Publishing image to repository'
+                                                echo("$TAG_NAME_VERSION")
+
+                                                docker.withRegistry('https://gcr.io', 'gcr:[pets]') {
+                                                      dockerImage.push()
+                                                      dockerImage.push("$TAG_NAME_VERSION")
                                                 }
 
                                                 // container('tools') {
