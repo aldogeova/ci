@@ -70,16 +70,22 @@ pipeline {
                                           }
 
                                                 echo "Creating Docker Image for $CURRENT_SERVICE_NAME"
-                                                def imageName = '${GC_REGISTRY}/${GC_PROJECT_ID}/${CURRENT_SERVICE_NAME}:${TAG_NAME_VERSION}'
+                                                def imageName = '$GC_REGISTRY/$GC_PROJECT_ID/$CURRENT_SERVICE_NAME:$TAG_NAME_VERSION'
                                                 echo "Push Docker Image  $imageName on GCP Plattform"
 
-                                                container('tools') {
-                                                      withCredentials([file(credentialsId: 'pets', variable: 'GC_KEY')]) {
-                                                            sh "gcloud auth activate-service-account --key-file=${GC_KEY}"
-                                                            sh 'gcloud auth configure-docker'
-                                                            sh "docker push ${IMAGE}"
+                                                script {
+                                                      withDockerRegistry([credentialsId: 'pets', url: 'https://gcr.io']) {
+                                                            sh "docker push $imageName"
                                                       }
                                                 }
+
+                                                // container('tools') {
+                                                //       withCredentials([file(credentialsId: 'pets', variable: 'GC_KEY')]) {
+                                                //             sh "gcloud auth activate-service-account --key-file=${GC_KEY}"
+                                                //             sh 'gcloud auth configure-docker'
+                                                //             sh "docker push ${IMAGE}"
+                                                //       }
+                                                // }
 
                                           // def imageName = "913527608034.dkr.ecr.eu-west-1.amazonaws.com/$CURRENT_SERVICE_NAME:$TAG_NAME"
                                           // def dockerImage = docker.build(imageName, SERVICE_HOME)
