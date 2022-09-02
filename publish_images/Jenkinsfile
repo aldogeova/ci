@@ -70,13 +70,18 @@ pipeline {
                                           }
 
                                                 echo "Creating Docker Image for $CURRENT_SERVICE_NAME"
+                                                echo "GC_REGISTRY $GC_REGISTRY"
+                                                echo "GC_PROJECT_ID $GC_PROJECT_ID"
+                                                echo "CURRENT_SERVICE_NAME $CURRENT_SERVICE_NAME"
+                                                echo "TAG_NAME_VERSION $TAG_NAME_VERSION"
+
                                                 def imageName = '$GC_REGISTRY/$GC_PROJECT_ID/$CURRENT_SERVICE_NAME:$TAG_NAME_VERSION'
                                                 echo "Push Docker Image  $imageName on GCP Plattform"
 
-                                                script {
-                                                      withDockerRegistry([credentialsId: 'pets', url: 'https://gcr.io']) {
-                                                            sh "docker push $imageName"
-                                                      }
+                                                def app = docker.build("$imageName")
+
+                                                docker.withRegistry('https://eu.gcr.io', 'gcr:[pets]') {
+                                                      app.push("${TAG_NAME_VERSION}")
                                                 }
 
                                                 // container('tools') {
