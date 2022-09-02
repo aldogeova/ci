@@ -10,7 +10,6 @@ pipeline {
             SPRING_BOOT_STARTER_NAME = 'ebuy-spring-boot-starter'
             SELENIUM_TESTS = 'ebuy-selenium-test'
 
-            DOCKER_REPOSITORY = '913527608034.dkr.ecr.eu-west-1.amazonaws.com'
             TAG_NAME = BRANCH_NAME.replaceAll('/', '-')
             BUILD_VERSION = sh(script: 'echo `date +%Y%m%d%H%M`', returnStdout: true).trim()
             TAG_NAME_VERSION = "$TAG_NAME-$BUILD_VERSION"
