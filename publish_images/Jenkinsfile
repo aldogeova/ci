@@ -69,9 +69,9 @@ pipeline {
                                                       echo "$CURRENT_SERVICE_NAME is not a Java service. Skiping jar generation."
                                                 }
 
-                                                echo '${EBUY_HOME}'
-                                                echo '${CURRENT_SERVICE_NAME}'
-                                                echo '${SERVICE_HOME}'
+                                                echo "${EBUY_HOME}"
+                                                echo "${CURRENT_SERVICE_NAME}"
+                                                echo "${SERVICE_HOME}"
 
                                                 def imageName = "$GC_REGISTRY/$GC_PROJECT_ID/$CURRENT_SERVICE_NAME:$TAG_NAME"
                                                 def dockerImage = docker.build(imageName, '$EBUY_HOME/$CURRENT_SERVICE_NAME')
