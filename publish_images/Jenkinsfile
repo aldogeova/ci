@@ -86,35 +86,20 @@ pipeline {
                                                       dockerImage.push("$TAG_NAME_VERSION")
                                                 }
 
-
                                                 echo "-------------------------------------"
                                                 echo "CONTAINER TOOLS"
+ 
                                                 echo "-------------------------------------"
-                                                container('tools') {
-                                                            echo "-------------------------------------"
-                                                            echo "INTO CONTAINER TOOLS"
-                                                            echo "-------------------------------------"
+                                                echo "GKE_CLUSTER_NAME ${GKE_CLUSTER_NAME}"
+                                                echo "GKE_CLUSTER_NAME ${GKE_ZONE}"
+                                                echo "GKE_CLUSTER_NAME ${GKE_ZONE}"
+                                                echo "-------------------------------------"
 
-                                                      withCredentials([file(credentialsId: 'pets', variable: 'GC_KEY')]) {
-                                                            echo "-------------------------------------"
-                                                            echo "ENTRE ${GC_KEY}"
-                                                            echo "-------------------------------------"
-                                                            sh "gcloud auth activate-service-account --key-file=${GC_KEY}"
-
-
-
-                                                            echo "-------------------------------------"
-                                                            echo "GKE_CLUSTER_NAME ${GKE_CLUSTER_NAME}"
-                                                            echo "GKE_CLUSTER_NAME ${GKE_ZONE}"
-                                                            echo "GKE_CLUSTER_NAME ${GKE_ZONE}"
-
-                                                            echo "-------------------------------------"
-
-                                                            sh "gcloud container clusters get-credentials $GKE_CLUSTER_NAME --zone=$GKE_ZONE --project=$GOOGLE_PROJECT_ID"
-                                                            sh "kubectl set image deployment $ENVIRONMENT-deployment-$CURRENT_SERVICE_NAME deployment-$CURRENT_SERVICE_NAME=$imageName -n $ENVIRONMENT"
-                                                            sh "kubectl rollout status deployment/$ENVIRONMENT-deployment-$CURRENT_SERVICE_NAME -n $ENVIRONMENT"
-                                                      }
-                                                }
+                                                sh "gcloud container clusters get-credentials $GKE_CLUSTER_NAME --zone=$GKE_ZONE --project=$GOOGLE_PROJECT_ID"
+                                                sh "kubectl set image deployment $ENVIRONMENT-deployment-$CURRENT_SERVICE_NAME deployment-$CURRENT_SERVICE_NAME=$imageName -n $ENVIRONMENT"
+                                                sh "kubectl rollout status deployment/$ENVIRONMENT-deployment-$CURRENT_SERVICE_NAME -n $ENVIRONMENT"
+                                          }
+                                    }
 
                                                 // container('tools') {
                                                 //       withCredentials([file(credentialsId: 'pets', variable: 'GC_KEY')]) {
@@ -124,20 +109,20 @@ pipeline {
                                                 //       }
                                                 // }
 
-                                          // def imageName = "913527608034.dkr.ecr.eu-west-1.amazonaws.com/$CURRENT_SERVICE_NAME:$TAG_NAME"
-                                          // def dockerImage = docker.build(imageName, SERVICE_HOME)
-                                          // echo 'Publishing image to repository'
-                                          // echo("$TAG_NAME_VERSION")
-                                          // docker.withRegistry('https://913527608034.dkr.ecr.eu-west-1.amazonaws.com', 'ecr:eu-west-1:ebuy-docker-repository') {
-                                          //       dockerImage.push()
-                                          //       dockerImage.push("$TAG_NAME_VERSION")
-                                          // }
-                                          }
-                                    }
+                              // def imageName = "913527608034.dkr.ecr.eu-west-1.amazonaws.com/$CURRENT_SERVICE_NAME:$TAG_NAME"
+                              // def dockerImage = docker.build(imageName, SERVICE_HOME)
+                              // echo 'Publishing image to repository'
+                              // echo("$TAG_NAME_VERSION")
+                              // docker.withRegistry('https://913527608034.dkr.ecr.eu-west-1.amazonaws.com', 'ecr:eu-west-1:ebuy-docker-repository') {
+                              //       dockerImage.push()
+                              //       dockerImage.push("$TAG_NAME_VERSION")
+                              // }
                               }
                         }
                   }
             }
+      }
+}
       }
       post {
             always {
