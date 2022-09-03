@@ -86,9 +86,30 @@ pipeline {
                                                       dockerImage.push("$TAG_NAME_VERSION")
                                                 }
 
+
+                                                echo "-------------------------------------"
+                                                echo "CONTAINER TOOLS"
+                                                echo "-------------------------------------"
                                                 container('tools') {
+                                                            echo "-------------------------------------"
+                                                            echo "INTO CONTAINER TOOLS"
+                                                            echo "-------------------------------------"
+
                                                       withCredentials([file(credentialsId: 'pets', variable: 'GC_KEY')]) {
+                                                            echo "-------------------------------------"
+                                                            echo "ENTRE ${GC_KEY}"
+                                                            echo "-------------------------------------"
                                                             sh "gcloud auth activate-service-account --key-file=${GC_KEY}"
+
+
+
+                                                            echo "-------------------------------------"
+                                                            echo "GKE_CLUSTER_NAME ${GKE_CLUSTER_NAME}"
+                                                            echo "GKE_CLUSTER_NAME ${GKE_ZONE}"
+                                                            echo "GKE_CLUSTER_NAME ${GKE_ZONE}"
+
+                                                            echo "-------------------------------------"
+
                                                             sh "gcloud container clusters get-credentials $GKE_CLUSTER_NAME --zone=$GKE_ZONE --project=$GOOGLE_PROJECT_ID"
                                                             sh "kubectl set image deployment $ENVIRONMENT-deployment-$CURRENT_SERVICE_NAME deployment-$CURRENT_SERVICE_NAME=$imageName -n $ENVIRONMENT"
                                                             sh "kubectl rollout status deployment/$ENVIRONMENT-deployment-$CURRENT_SERVICE_NAME -n $ENVIRONMENT"
