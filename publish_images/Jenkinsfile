@@ -10,13 +10,15 @@ pipeline {
             SPRING_BOOT_STARTER_NAME = 'ebuy-spring-boot-starter'
             SELENIUM_TESTS = 'ebuy-selenium-test'
 
-            TAG_NAME = BRANCH_NAME.replaceAll('/', '-')
+            TAG_NAME = BRANCH_NAME.replaceAll('/', '.')
             BUILD_VERSION = sh(script: 'echo `date +%Y%m%d%H%M`', returnStdout: true).trim()
             TAG_NAME_VERSION = "$TAG_NAME-$BUILD_VERSION"
 
             //GCP Variables
-            GC_REGISTRY = 'us.gcr.io'
-            GC_PROJECT_ID = 'pets-359514'
+            GC_REGISTRY             = 'us.gcr.io'
+            GC_PROJECT_ID           = 'pets-359514'
+            GKE_CLUSTER_NAME        = "polar-ks8"
+            GKE_ZONE                = "us-east4-c"
       }
 
       stages {
@@ -82,6 +84,15 @@ pipeline {
                                                 docker.withRegistry('https://us.gcr.io', 'gcr:pets') {
                                                       dockerImage.push()
                                                       dockerImage.push("$TAG_NAME_VERSION")
+                                                }
+
+                                                container('tools') {
+                                                      withCredentials([file(credentialsId: 'pets', variable: 'GC_KEY')]) {
+                                                            sh "gcloud auth activate-service-account --key-file=${GC_KEY}"
+                                                            sh "gcloud container clusters get-credentials $GKE_CLUSTER_NAME --zone=$GKE_ZONE --project=$GOOGLE_PROJECT_ID"
+                                                            sh "kubectl set image deployment $ENVIRONMENT-deployment-$CURRENT_SERVICE_NAME deployment-$CURRENT_SERVICE_NAME=$imageName -n $ENVIRONMENT"
+                                                            sh "kubectl rollout status deployment/$ENVIRONMENT-deployment-$CURRENT_SERVICE_NAME -n $ENVIRONMENT"
+                                                      }
                                                 }
 
                                                 // container('tools') {
