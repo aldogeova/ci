@@ -63,7 +63,7 @@ pipeline {
 
 
 
-                                                if (service != 'ebuy-angular-client'  && service != 'ebuy-selenium-test'){
+                                                if (service != 'ebuy-angular-client'  && service != 'ebuy-selenium-test'   && service != 'ebuy-selenium-test'){
 
 
                                                 def CURRENT_SERVICE_NAME = service
